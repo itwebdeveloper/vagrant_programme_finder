@@ -1,0 +1,18 @@
+---
+# These tasks install composer for PHP.
+
+- name: install composer
+  become: true
+  shell: curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+  args:
+    creates: /usr/local/bin/composer
+
+- name: change permissions of the public directory
+  become: true
+  file:
+    path: /var/www/programme_finder
+    state: directory
+    mode: 0777
+
+- name: composer install
+  composer: command=install working_dir=/var/www/programme_finder optimize_autoloader=no

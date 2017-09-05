@@ -1,0 +1,34 @@
+---
+# These tasks install MySQL database and configure it.
+
+- name: Install MySQL package
+  become: true
+  apt: name={{ item }} state=installed
+  with_items:
+   - mysql-server-5.6
+
+- name: Create MySQL configuration file
+  become: true
+  template: src=my.cnf.j2 dest=/etc/mysql/my.cnf
+  notify:
+    - restart mysql
+
+- name: Start MySQL Service
+  become: true
+  service: name=mysql state=started enabled=yes
+
+- name: Install Python to MySQL connectors
+  become: true
+  apt: name={{ item }} state=present update_cache=true
+  with_items:
+    - python-mysqldb
+
+- name: Create General Database
+  mysql_db: login_user=root name={{ dbname }} state=present
+
+- name: Create Application DB user
+  mysql_user: login_user=root name={{ dbuser }} password={{ upassword }} priv=*.*:ALL,GRANT host='%' state=present
+
+- name: install Application DB fragment 
+  become: true
+  shell: mysql -u root < /var/www/programme_finder/sql/init.sql

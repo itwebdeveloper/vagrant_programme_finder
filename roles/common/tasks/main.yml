@@ -1,0 +1,9 @@
+---
+# This playbook contains common plays that will be run on all nodes.
+
+- include: install_basic_packages.yml
+- include: install_apache.yml
+- include: install_php.yml
+- include: copy_code.yml
+- include: install_composer.yml
+- include: install_mysql.yml

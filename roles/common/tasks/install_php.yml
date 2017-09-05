@@ -1,0 +1,35 @@
+---
+# These tasks install the PHP modules.
+
+- name: Install PHP
+  become: true
+  apt: name={{ item }} state=present
+  with_items:
+    - php5
+    - php5-mysql
+    - php5-curl
+  notify: restart apache
+
+- name: Edit error_reporting PHP configuration
+  become: true
+  lineinfile:
+    path: /etc/php5/apache2/php.ini
+    regexp: '^error_reporting'
+    line: 'error_reporting = E_ALL | E_STRICT'
+  notify: restart apache
+
+- name: Edit display_errors PHP configuration
+  become: true
+  lineinfile:
+    path: /etc/php5/apache2/php.ini
+    regexp: '^display_errors'
+    line: 'display_errors = On'
+  notify: restart apache
+
+- name: Edit PHP configuration
+  become: true
+  lineinfile:
+    path: /etc/php5/apache2/php.ini
+    regexp: '^display_startup_errors'
+    line: 'display_startup_errors = On'
+  notify: restart apache

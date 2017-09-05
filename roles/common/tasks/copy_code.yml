@@ -1,0 +1,32 @@
+---
+# These tasks are responsible for copying the latest dev/production code from
+# the version control system.
+
+- name: Create the application directory
+  become: true
+  file: path=/var/www/programme_finder/ state=directory
+
+- name: Copy the code from repository
+  become: true
+  git: repo={{ repository }} dest=/var/www/programme_finder/ accept_hostkey=True version=master
+
+- name: Create the application configuration file
+  become: true
+  template: src=config.php.j2 dest=/var/www/programme_finder/config/config.php
+
+- name: Create the application configuration file
+  become: true
+  template: src=config_backend.php.j2 dest=/var/www/programme_finder/config/config_backend.php
+
+- name: change owner of the public directory
+  become: true
+  file:
+    path: /var/www/programme_finder
+    state: directory
+    owner: www-data
+    group: www-data
+    recurse: yes
+
+- name: Remove the index.html file
+  become: true
+  file: path=/var/www/index.html state=absent
